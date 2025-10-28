@@ -1,138 +1,110 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>AI Course Assistant (Pilot)</title>
-  <style>
-    :root{
-      --bg:#f6f7fb;--card:#fff;--text:#222;--muted:#666;
-      --brand:#ea5b0c;--brand-contrast:#fff;--bubble:#f1f3f7;
-      --radius:12px;
-      font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif;
-    }
-    body{margin:0;background:var(--bg);color:var(--text);}
-    .wrap{max-width:860px;margin:24px auto;padding:16px;}
-    .card{background:var(--card);box-shadow:0 1px 6px rgba(0,0,0,.07);
-          border-radius:var(--radius);padding:16px;}
-    .heading{font-weight:700;margin:0 0 4px;}
-    .sub{color:var(--muted);margin:0 0 12px;font-size:0.95rem}
-    .log{display:flex;flex-direction:column;gap:12px;min-height:300px}
-    .msg{background:var(--bubble);border-radius:14px;padding:12px 14px;max-width:78%}
-    .msg.user{align-self:flex-end;background:#e9f0ff}
-    .msg.bot{align-self:flex-start}
-    .menu{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px}
-    button.q{
-      background:var(--brand);color:var(--brand-contrast);border:0;border-radius:999px;
-      padding:10px 14px;font-weight:600;cursor:pointer
-    }
-    button.q:disabled{opacity:.45;cursor:not-allowed}
-    .toolbar{display:flex;gap:10px;margin-top:8px}
-    .tool{
-      background:#fff;border:1px solid #e2e4ea;border-radius:8px;padding:6px 10px;cursor:pointer
-    }
-    small.muted{color:var(--muted)}
-  </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>AI Course Assistant (Pilot)</title>
+<style>
+  body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;margin:0;background:#f7f7fb;color:#222;}
+  .wrap{max-width:900px;margin:40px auto;padding:24px;background:#fff;border-radius:12px;box-shadow:0 4px 16px rgba(0,0,0,.06)}
+  h1{font-size:18px;margin:0 0 8px}
+  p.lead{margin:0 0 16px;color:#555}
+  .log{background:#fafafa;border:1px solid #eee;border-radius:10px;padding:16px;height:420px;overflow:auto}
+  .msg{padding:10px 12px;border-radius:10px;margin:8px 0;max-width:720px;line-height:1.4}
+  .msg.bot{background:#f2f4f7}
+  .msg.user{background:#e6f2ff}
+  .menu{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+  .q{background:#ff6a00;border:none;color:#fff;padding:10px 12px;border-radius:8px;cursor:pointer}
+  .q:hover{opacity:.9}
+  .bar{display:flex;gap:8px;margin-top:12px}
+  .btn{background:#eee;border:1px solid #ddd;border-radius:8px;padding:6px 10px;cursor:pointer}
+  .btn:hover{background:#f5f5f5}
+  small.tip{display:block;margin-top:8px;color:#777}
+</style>
 </head>
 <body>
   <div class="wrap">
-    <div class="card">
-      <p class="heading">AI Course Assistant (Pilot)</p>
-      <p class="sub">Answers common course admin questions (modules, deadlines, support).  
-        For academic/grading queries, please contact your tutor.</p>
+    <h1>AI Course Assistant (Pilot)</h1>
+    <p class="lead">Answers common course admin questions (modules, deadlines, support). For academic/grading queries, please contact your tutor.</p>
 
-      <div class="log" id="log"></div>
+    <div id="log" class="log" aria-live="polite"></div>
+    <div id="menu" class="menu"></div>
 
-      <div class="menu" id="menu" aria-label="Question choices"></div>
-
-      <div class="toolbar">
-        <button class="tool" id="restart">Restart</button>
-        <button class="tool" id="clear">Clear (forget previous in this tab)</button>
-      </div>
-
-      <p><small class="muted">Tip: embed this page in Moodle/Canvas using an iframe.</small></p>
+    <div class="bar">
+      <button id="restart" class="btn">Restart</button>
+      <button id="clear" class="btn">Clear (forget previous in this tab)</button>
     </div>
+    <small class="tip">Tip: embed this page in Moodle/Canvas using an iframe.</small>
   </div>
 
-  <script>
-    // --- EDIT THESE VALUES --------------------------------------------------
-    const courseName = "Sustainable Cooling: Building Resilience to Extreme Heat (May 25)";
-    const QUESTIONS = [
-      {id:"modules", text:"How many modules do we have?", 
-       answer:"There are <strong>8</strong> modules in this course."},
-      {id:"support", text:"Who can I contact for technical support?", 
-       answer:"For login/platform issues, email <strong>support@…</strong> with your full name and course title."},
-      {id:"score", text:"What is the minimum score to pass the course?", 
-       answer:"You’ll need <strong>75% overall</strong> to complete successfully and qualify for your certificate."}
-    ];
-    // -----------------------------------------------------------------------
+<script>
+const courseName = "Sustainable Cooling: Building Resilience to Extreme Heat (May 25)";
 
-    // Simple per-tab memory using sessionStorage
-    const askedKey = "assistant-asked";
-    const loadAsked = () => new Set(JSON.parse(sessionStorage.getItem(askedKey) || "[]"));
-    const saveAsked = (set) => sessionStorage.setItem(askedKey, JSON.stringify([...set]));
+const QUESTIONS = [
+  { id:"modules", text:"How many modules do we have?",
+    answer:"We have <strong>8 modules</strong> in total." },
+  { id:"support", text:"Who can I contact for technical support?",
+    answer:"Please email <strong>support@…</strong> and include your <em>full name</em> and <em>course title</em>." },
+  { id:"pass", text:"What is the minimum score to pass the course?",
+    answer:"You’ll need to achieve at least <strong>75% overall</strong> to complete the course successfully and qualify for your certificate." }
+];
 
-    const log = document.getElementById("log");
-    const menu = document.getElementById("menu");
-    const asked = loadAsked();
+const askedKey = "ai_course_assistant_asked";
+const asked = new Set(JSON.parse(sessionStorage.getItem(askedKey) || "[]"));
 
-    function addBot(textHTML){
-      const div = document.createElement("div");
-      div.className = "msg bot";
-      div.innerHTML = textHTML;
-      log.appendChild(div);
-      log.scrollTop = log.scrollHeight;
-    }
-    function addUser(text){
-      const div = document.createElement("div");
-      div.className = "msg user";
-      div.textContent = text;
-      log.appendChild(div);
-      log.scrollTop = log.scrollHeight;
-    }
+const log = document.getElementById("log");
+const menu = document.getElementById("menu");
 
-    function renderMenu(){
-      menu.innerHTML = "";
-      const remaining = QUESTIONS.filter(q => !asked.has(q.id));
-      if(remaining.length === 0){
-        addBot("That’s all I can help with in this pilot. For anything else, please contact your tutor.");
-        return;
-      }
-      remaining.forEach(q=>{
-        const b = document.createElement("button");
-        b.className = "q";
-        b.type = "button";
-        b.textContent = q.text;
-        b.onclick = () => ask(q.id);
-        menu.appendChild(b);
-      });
-    }
+function addMsg(text, who="bot"){
+  const div = document.createElement("div");
+  div.className = `msg ${who}`;
+  div.innerHTML = text;
+  log.appendChild(div);
+  log.scrollTop = log.scrollHeight;
+}
 
-    function ask(id){
-      const q = QUESTIONS.find(x=>x.id===id);
-      if(!q) return;
-      addUser(q.text);
-      asked.add(id);
-      saveAsked(asked);
-      addBot(q.answer);
-      renderMenu();
-    }
+function saveAsked(){
+  sessionStorage.setItem(askedKey, JSON.stringify(Array.from(asked)));
+}
 
-    function start(){
-      log.innerHTML = "";
-      addBot(\`Hi! I’m your Course Assistant for <em>\${courseName}</em>. I can answer a few common course questions about deadlines, extensions, and certificates. What would you like to know?\`);
-      renderMenu();
-    }
+function renderMenu(){
+  menu.innerHTML = "";
+  const remaining = QUESTIONS.filter(q => !asked.has(q.id));
 
-    document.getElementById("restart").onclick = () => { start(); };
-    document.getElementById("clear").onclick = () => {
-      sessionStorage.removeItem(askedKey);
-      asked.clear();
-      start();
-    };
+  if(remaining.length === 0){
+    addMsg("That’s all I can help with in this pilot. For anything else, please contact your tutor.");
+    return;
+  }
+  remaining.forEach(q=>{
+    const b = document.createElement("button");
+    b.className = "q";
+    b.type = "button";
+    b.textContent = q.text;
+    b.onclick = () => ask(q.id);
+    menu.appendChild(b);
+  });
+}
 
-    if(asked.size>0){ addBot("Welcome back — continuing where you left off."); }
-    start();
-  </script>
+function ask(id){
+  const q = QUESTIONS.find(x => x.id === id);
+  if(!q) return;
+  addMsg(q.text, "user");
+  asked.add(id);
+  saveAsked();
+  addMsg(q.answer);
+  renderMenu();
+}
+
+function start(){
+  log.innerHTML = "";
+  addMsg(`Hi! I’m your Course Assistant for <em>${courseName}</em>. I can answer a few common course questions about deadlines, extensions, and certificates. What would you like to know?`);
+  renderMenu();
+}
+
+document.getElementById("restart").onclick = () => { asked.clear(); saveAsked(); start(); };
+document.getElementById("clear").onclick = () => { sessionStorage.removeItem(askedKey); asked.clear(); start(); };
+
+start();
+</script>
 </body>
 </html>
