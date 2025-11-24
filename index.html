@@ -1,152 +1,229 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Innovation Management – AI Course Assistant</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Innovation Management – AI Assistant</title>
 
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f5f5f5;
-      margin: 0;
-      padding: 20px;
-      display: flex;
-      justify-content: center;
-    }
+<style>
+  body {
+    margin: 0;
+    padding: 0;
+    background: #0d0d0d;
+    font-family: "Segoe UI", Arial, sans-serif;
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    padding-top: 40px;
+  }
 
-    .chat-container {
-      background: white;
-      width: 100%;
-      max-width: 650px;
-      border-radius: 12px;
-      padding: 20px;
-      box-shadow: 0 4px 14px rgba(0,0,0,0.15);
-    }
+  .container {
+    width: 100%;
+    max-width: 650px;
+    background: #161616;
+    border-radius: 16px;
+    padding: 25px;
+    box-shadow: 0 0 25px rgba(0,0,0,0.25);
+    border: 1px solid #262626;
+  }
 
-    h2 {
-      margin-top: 0;
-      text-align: center;
-      color: #6a1b9a;
-    }
+  h2 {
+    text-align: center;
+    margin-top: 0;
+    color: #ba68ff;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
 
-    .messages {
-      height: 420px;
-      overflow-y: auto;
-      border: 1px solid #ddd;
-      border-radius: 10px;
-      padding: 10px;
-      background: #fafafa;
-    }
+  .messages {
+    background: #111;
+    height: 420px;
+    overflow-y: auto;
+    padding: 15px;
+    border-radius: 12px;
+    border: 1px solid #242424;
+  }
 
-    .msg {
-      margin: 10px 0;
-      padding: 12px;
-      border-radius: 10px;
-      line-height: 1.4;
-      max-width: 80%;
-      white-space: pre-wrap;
-    }
+  .bubble {
+    max-width: 80%;
+    padding: 12px 16px;
+    border-radius: 14px;
+    margin-bottom: 14px;
+    line-height: 1.45;
+    font-size: 15px;
+    animation: fadeIn 0.2s ease-in;
+    white-space: pre-wrap;
+  }
 
-    .msg.user {
-      background: #e1bee7;
-      align-self: flex-end;
-      margin-left: auto;
-    }
+  .user {
+    background: #7e57c2;
+    margin-left: auto;
+    border-bottom-right-radius: 4px;
+  }
 
-    .msg.bot {
-      background: #ffffff;
-      border: 1px solid #ddd;
-    }
+  .bot {
+    background: #2b2b2b;
+    border-bottom-left-radius: 4px;
+    border: 1px solid #3a3a3a;
+  }
 
-    .input-area {
-      margin-top: 15px;
-      display: flex;
-      gap: 10px;
-    }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(3px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
 
-    input {
-      flex: 1;
-      padding: 12px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      font-size: 16px;
-    }
+  /* Typing indicator (three bouncing dots) */
+  .typing {
+    display: flex;
+    gap: 6px;
+    padding-left: 4px;
+  }
+  .dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #ba68ff;
+    animation: bounce 0.8s infinite alternate;
+  }
+  .dot:nth-child(2) { animation-delay: 0.15s; }
+  .dot:nth-child(3) { animation-delay: 0.3s; }
 
-    button {
-      padding: 12px 20px;
-      border: none;
-      background: #8e24aa;
-      color: white;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 16px;
-    }
+  @keyframes bounce {
+    from { transform: translateY(0); opacity: 0.6; }
+    to { transform: translateY(-6px); opacity: 1; }
+  }
 
-    button:hover {
-      background: #6a1b9a;
-    }
-  </style>
+  .input-area {
+    margin-top: 16px;
+    display: flex;
+    gap: 10px;
+  }
+
+  input {
+    flex: 1;
+    padding: 14px;
+    border-radius: 10px;
+    border: 1px solid #333;
+    background: #1b1b1b;
+    color: #fff;
+    font-size: 15px;
+  }
+
+  button {
+    padding: 14px 22px;
+    font-size: 15px;
+    border: none;
+    border-radius: 10px;
+    background: #ba68ff;
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  button:hover {
+    background: #a84aff;
+  }
+</style>
 </head>
 
 <body>
+<div class="container">
+  <h2>💡 Innovation Management – AI Assistant</h2>
 
-  <div class="chat-container">
-    <h2>💡 Innovation Management – AI Assistant</h2>
+  <div id="messages" class="messages"></div>
 
-    <div id="messages" class="messages"></div>
-
-    <div class="input-area">
-      <input id="userInput" type="text" placeholder="Ask a question about the course...">
-      <button onclick="sendMessage()">Send</button>
-    </div>
+  <div class="input-area">
+    <input id="userInput" type="text" placeholder="Ask a question about the course…" />
+    <button onclick="sendMessage()">Send</button>
   </div>
+</div>
 
-  <script>
-    const webhookURL = "https://n8n.srv1133312.hstgr.cloud/webhook/innovation-helper";
+<script>
+  /* Your real webhook URL */
+  const webhookURL = "https://n8n.srv1133312.hstgr.cloud/webhook/innovation-helper";
 
-    function addMessage(text, sender) {
-      const messages = document.getElementById("messages");
-      const div = document.createElement("div");
-      div.className = "msg " + sender;
-      div.textContent = text;
-      messages.appendChild(div);
-      messages.scrollTop = messages.scrollHeight;
+  let conversationMemory = [];
+
+  function addBubble(text, sender) {
+    const container = document.getElementById("messages");
+    const bubble = document.createElement("div");
+    bubble.className = "bubble " + sender;
+    bubble.textContent = text;
+    container.appendChild(bubble);
+    container.scrollTop = container.scrollHeight;
+  }
+
+  function addTypingIndicator() {
+    const container = document.getElementById("messages");
+    const wrap = document.createElement("div");
+    wrap.className = "bubble bot";
+    wrap.id = "typingIndicator";
+
+    const dots = document.createElement("div");
+    dots.className = "typing";
+
+    dots.appendChild(Object.assign(document.createElement("div"), { className:"dot" }));
+    dots.appendChild(Object.assign(document.createElement("div"), { className:"dot" }));
+    dots.appendChild(Object.assign(document.createElement("div"), { className:"dot" }));
+
+    wrap.appendChild(dots);
+    container.appendChild(wrap);
+    container.scrollTop = container.scrollHeight;
+  }
+
+  function removeTypingIndicator() {
+    const el = document.getElementById("typingIndicator");
+    if (el) el.remove();
+  }
+
+  async function sendMessage() {
+    const input = document.getElementById("userInput");
+    const text = input.value.trim();
+    if (!text) return;
+
+    addBubble(text, "user");
+
+    conversationMemory.push({ role: "user", content: text });
+    input.value = "";
+
+    addTypingIndicator();
+
+    try {
+      const response = await fetch(webhookURL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          message: text,
+          memory: conversationMemory
+        })
+      });
+
+      const blob = await response.blob();
+      const resultText = await blob.text();
+
+      removeTypingIndicator();
+
+      /* guardrails (simple version) */
+      const safeText = applyGuardrails(resultText);
+
+      conversationMemory.push({ role: "assistant", content: safeText });
+      addBubble(safeText, "bot");
+
+    } catch (error) {
+      removeTypingIndicator();
+      addBubble("⚠️ Error connecting — please try again.", "bot");
     }
+  }
 
-    async function sendMessage() {
-      const input = document.getElementById("userInput");
-      const text = input.value.trim();
-      if (!text) return;
-
-      addMessage(text, "user");
-      input.value = "";
-
-      addMessage("Thinking...", "bot");
-
-      try {
-        const response = await fetch(webhookURL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ message: text })
-        });
-
-        const reader = new FileReader();
-        const blob = await response.blob();
-        const resultText = await blob.text();
-
-        // Remove the "Thinking..." placeholder (last bot message)
-        const messages = document.getElementById("messages");
-        messages.removeChild(messages.lastChild);
-
-        addMessage(resultText, "bot");
-
-      } catch (error) {
-        console.error(error);
-        addMessage("⚠️ Error connecting to assistant. Check n8n webhook.", "bot");
-      }
+  /* Basic guardrails template */
+  function applyGuardrails(text) {
+    if (text.toLowerCase().includes("provide the full answer")
+        || text.toLowerCase().includes("write my assignment")
+        || text.toLowerCase().includes("complete the assessment")) {
+      return "I can guide you with concepts, but I can’t complete assessments. Reach out to your tutor for academic help.";
     }
-  </script>
+    return text;
+  }
+</script>
 
 </body>
 </html>
