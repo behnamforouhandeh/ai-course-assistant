@@ -203,10 +203,34 @@
       gap: 8px;
     }
 
+    .helper-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+
     .helper-text {
       font-size: 12px;
       color: var(--text-muted);
-      margin-bottom: 4px;
+    }
+
+    .reset-button {
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      background: rgba(15, 23, 42, 0.9);
+      color: var(--text-muted);
+      cursor: pointer;
+      white-space: nowrap;
+      box-shadow: none;
+    }
+
+    .reset-button:hover {
+      background: rgba(30, 64, 175, 0.9);
+      color: #e5e7eb;
     }
 
     .quick-prompts {
@@ -314,6 +338,11 @@
         max-width: 100%;
       }
 
+      .helper-row {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
       button {
         padding: 0 14px;
         min-width: 70px;
@@ -337,8 +366,13 @@
       </section>
 
       <footer class="chat-footer">
-        <div class="helper-text">
-          Try: “What will we cover in Week 2?”, “Tell me about Assessment 1” or “How many hours per week?”
+        <div class="helper-row">
+          <div class="helper-text">
+            Try: “What will we cover in Week 2?”, “Tell me about Assessment 1” or “How many hours per week?”
+          </div>
+          <button type="button" class="reset-button" id="reset-button">
+            Reset conversation
+          </button>
         </div>
 
         <div class="quick-prompts">
@@ -375,12 +409,14 @@
     const formEl = document.getElementById("chat-form");
     const inputEl = document.getElementById("message-input");
     const sendButtonEl = document.getElementById("send-button");
+    const resetButtonEl = document.getElementById("reset-button");
+    const chips = Array.from(document.querySelectorAll(".prompt-chip"));
 
     const memory = [];
     let typingRow = null;
 
     function renderAssistantHtml(text) {
-      // Basic escaping
+      // Escape
       let safe = text
         .replace(/&/g, "&amp;")
         .replace(/</g, "&lt;")
@@ -505,6 +541,33 @@
       }
     }
 
+    function initialiseGreeting() {
+      appendMessage(
+        "assistant",
+        "Hi, I’m the Innovation Management course assistant. You can ask about weekly topics, assessments, workload, learning outcomes or the textbook."
+      );
+    }
+
+    function resetConversation() {
+      // Clear UI messages
+      messagesEl.innerHTML = "";
+      // Clear memory
+      memory.length = 0;
+      // Clear typing indicator reference just in case
+      typingRow = null;
+      // Reset input
+      inputEl.value = "";
+      // Reset chips
+      chips.forEach((chip) => {
+        chip.dataset.used = "0";
+        chip.style.display = "";
+      });
+      // Add greeting back
+      initialiseGreeting();
+      // Scroll to top
+      messagesEl.scrollTop = 0;
+    }
+
     formEl.addEventListener("submit", (event) => {
       event.preventDefault();
       const raw = inputEl.value.trim();
@@ -513,14 +576,15 @@
       sendToBackend(raw);
     });
 
-    // Initial greeting
-    appendMessage(
-      "assistant",
-      "Hi, I’m the Innovation Management course assistant. You can ask about weekly topics, assessments, workload, learning outcomes or the textbook."
-    );
+    resetButtonEl.addEventListener("click", () => {
+      resetConversation();
+    });
+
+    // Initial greeting on first load
+    initialiseGreeting();
 
     // Quick prompt chips: fill box + hide chip once used
-    document.querySelectorAll(".prompt-chip").forEach((chip) => {
+    chips.forEach((chip) => {
       chip.addEventListener("click", () => {
         if (chip.dataset.used === "1") return;
         inputEl.value = chip.textContent;
