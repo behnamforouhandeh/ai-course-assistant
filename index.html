@@ -6,19 +6,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     :root {
-      --bg-body: #020617;         /* page background */
-      --bg-panel: #020617;        /* outer panel */
-      --bg-chat: #020617;         /* inner chat background */
+      --bg-body: #020617;
+      --bg-panel: #020617;
+      --bg-chat: #020617;
       --border-subtle: #1e293b;
-      --accent: #38bdf8;
-      --accent-soft: rgba(56, 189, 248, 0.12);
-      --user-bubble: #38bdf8;
-      --assistant-bubble: #0f172a;
+      --accent: #a855f7;
+      --user-bubble: #a855f7;
+      --assistant-bubble: #020617;
       --text-main: #e5e7eb;
       --text-muted: #9ca3af;
       --radius-lg: 1.5rem;
-      --radius-md: 1rem;
-      --shadow-soft: 0 18px 40px rgba(0, 0, 0, 0.55);
+      --shadow-soft: 0 18px 40px rgba(0, 0, 0, 0.6);
     }
 
     * {
@@ -30,7 +28,7 @@
     body {
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
         sans-serif;
-      background: radial-gradient(circle at top, #1e293b 0, #020617 55%);
+      background: radial-gradient(circle at top, #1f2937 0, #020617 60%);
       color: var(--text-main);
       min-height: 100vh;
       display: flex;
@@ -40,74 +38,46 @@
     }
 
     .app-shell {
-      max-width: 900px;
+      max-width: 950px;
       width: 100%;
     }
 
     .chat-panel {
-      background: linear-gradient(145deg, #020617, #020617);
+      background: radial-gradient(circle at top, #111827, #020617 70%);
       border-radius: 2rem;
       box-shadow: var(--shadow-soft);
-      padding: 20px;
-      border: 1px solid rgba(148, 163, 184, 0.2);
-      backdrop-filter: blur(16px);
+      padding: 24px 24px 18px;
+      border: 1px solid rgba(148, 163, 184, 0.25);
     }
 
     .chat-header {
       display: flex;
+      flex-direction: column;
       align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      padding: 8px 4px 16px;
-      border-bottom: 1px solid var(--border-subtle);
-      margin-bottom: 16px;
+      text-align: center;
+      gap: 6px;
+      margin-bottom: 18px;
     }
 
-    .chat-header-left {
+    .chat-header-title-row {
       display: flex;
       align-items: center;
-      gap: 12px;
-    }
-
-    .avatar {
-      width: 40px;
-      height: 40px;
-      border-radius: 999px;
-      background: radial-gradient(circle at 30% 20%, #e0f2fe, #38bdf8);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 700;
-      color: #020617;
-      font-size: 18px;
-      box-shadow: 0 0 0 2px rgba(15, 23, 42, 0.6);
-    }
-
-    .title-block h1 {
-      font-size: 18px;
+      gap: 8px;
       font-weight: 600;
-      letter-spacing: 0.01em;
+      font-size: 18px;
     }
 
-    .title-block p {
-      font-size: 12px;
-      color: var(--text-muted);
+    .chat-header-title-row span:first-child {
+      font-size: 18px;
     }
 
-    .badge {
-      font-size: 11px;
-      padding: 4px 10px;
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.6);
-      background: radial-gradient(circle at top left, #1d283a, #020617);
+    .chat-header p {
+      font-size: 13px;
       color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.09em;
-      white-space: nowrap;
     }
 
     .chat-body {
-      background: var(--bg-chat);
+      background: #020617;
       border-radius: 1.5rem;
       border: 1px solid var(--border-subtle);
       padding: 16px;
@@ -156,22 +126,21 @@
     .message-bubble {
       max-width: 80%;
       padding: 9px 13px;
-      border-radius: 999px;
+      border-radius: 18px;
       font-size: 14px;
       line-height: 1.35;
       white-space: pre-wrap;
       word-wrap: break-word;
-      position: relative;
     }
 
     .message-row.user .message-bubble {
       background: var(--user-bubble);
-      color: #0f172a;
+      color: #f9fafb;
       border-bottom-right-radius: 4px;
     }
 
     .message-row.assistant .message-bubble {
-      background: var(--assistant-bubble);
+      background: #020617;
       border: 1px solid var(--border-subtle);
       color: var(--text-main);
       border-bottom-left-radius: 4px;
@@ -188,7 +157,7 @@
       color: var(--text-muted);
       padding: 3px 10px;
       border-radius: 999px;
-      background: rgba(15, 23, 42, 0.9);
+      background: rgba(15, 23, 42, 0.95);
       border: 1px solid rgba(51, 65, 85, 0.9);
     }
 
@@ -202,22 +171,38 @@
     .helper-text {
       font-size: 12px;
       color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+
+    .quick-prompts {
       display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 10px;
     }
 
-    .helper-text span {
-      display: inline-block;
-    }
-
-    .helper-dot {
-      width: 6px;
-      height: 6px;
+    .prompt-chip {
+      padding: 6px 12px;
       border-radius: 999px;
-      background: var(--accent);
-      box-shadow: 0 0 12px rgba(56, 189, 248, 0.7);
+      font-size: 12px;
+      background: rgba(148, 163, 184, 0.15);
+      color: #e5e7eb;
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      cursor: pointer;
+      transition: background 0.15s ease, transform 0.1s ease,
+        box-shadow 0.1s ease;
+      white-space: nowrap;
+    }
+
+    .prompt-chip:hover {
+      background: rgba(148, 163, 184, 0.25);
+      transform: translateY(-1px);
+      box-shadow: 0 10px 20px rgba(15, 23, 42, 0.6);
+    }
+
+    .prompt-chip:active {
+      transform: translateY(0);
+      box-shadow: none;
     }
 
     form {
@@ -248,7 +233,7 @@
 
     textarea:focus {
       border-color: var(--accent);
-      box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.4);
+      box-shadow: 0 0 0 1px rgba(168, 85, 247, 0.5);
     }
 
     button {
@@ -258,15 +243,15 @@
       font-size: 14px;
       font-weight: 500;
       cursor: pointer;
-      background: radial-gradient(circle at top left, #38bdf8, #0ea5e9);
-      color: #020617;
+      background: radial-gradient(circle at top left, #a855f7, #7c3aed);
+      color: #f9fafb;
       display: flex;
       align-items: center;
       justify-content: center;
       min-width: 82px;
       transition: transform 0.08s ease-out, box-shadow 0.08s ease-out,
         filter 0.08s ease-out;
-      box-shadow: 0 14px 32px rgba(56, 189, 248, 0.3);
+      box-shadow: 0 14px 32px rgba(168, 85, 247, 0.4);
       white-space: nowrap;
     }
 
@@ -280,13 +265,13 @@
 
     button:not(:disabled):hover {
       transform: translateY(-1px);
-      box-shadow: 0 18px 40px rgba(56, 189, 248, 0.45);
-      filter: brightness(1.02);
+      box-shadow: 0 18px 40px rgba(168, 85, 247, 0.55);
+      filter: brightness(1.03);
     }
 
     button:not(:disabled):active {
       transform: translateY(0);
-      box-shadow: 0 10px 24px rgba(56, 189, 248, 0.4);
+      box-shadow: 0 10px 24px rgba(168, 85, 247, 0.45);
     }
 
     .send-icon {
@@ -297,7 +282,7 @@
     @media (max-width: 640px) {
       .chat-panel {
         border-radius: 1.5rem;
-        padding: 16px;
+        padding: 18px 16px 14px;
       }
 
       .message-bubble {
@@ -315,14 +300,11 @@
   <div class="app-shell">
     <div class="chat-panel">
       <header class="chat-header">
-        <div class="chat-header-left">
-          <div class="avatar">IM</div>
-          <div class="title-block">
-            <h1>Innovation Management – AI Assistant</h1>
-            <p>Ask about weeks, assessments, workload or textbook (course data only).</p>
-          </div>
+        <div class="chat-header-title-row">
+          <span>💡</span>
+          <span>Innovation Management – AI Assistant</span>
         </div>
-        <div class="badge">DEMO · POSTGRAD</div>
+        <p>Ask questions about weeks, assessments and expectations based on the course data.</p>
       </header>
 
       <section class="chat-body">
@@ -331,13 +313,26 @@
 
       <footer class="chat-footer">
         <div class="helper-text">
-          <span>Tip: Try “What will we cover in Week 2?” or “How is Assessment 2 marked?”</span>
-          <span class="helper-dot"></span>
+          Try: “What will we cover in Week 2?”, “Tell me about Assessment 1” or “How many hours per week?”
         </div>
+
+        <div class="quick-prompts">
+          <button class="prompt-chip">Week 1 overview</button>
+          <button class="prompt-chip">Week 2 overview</button>
+          <button class="prompt-chip">Week 3 overview</button>
+          <button class="prompt-chip">Week 4 overview</button>
+          <button class="prompt-chip">Assessment 1 details</button>
+          <button class="prompt-chip">Assessment 2 details</button>
+          <button class="prompt-chip">Assessment 3 details</button>
+          <button class="prompt-chip">Assessment 4 details</button>
+          <button class="prompt-chip">Weekly workload</button>
+          <button class="prompt-chip">What is the textbook?</button>
+        </div>
+
         <form id="chat-form">
           <textarea
             id="message-input"
-            placeholder="Type your question about this Innovation Management course..."
+            placeholder="Ask a question about the course..."
           ></textarea>
           <button type="submit" id="send-button">
             Send
@@ -349,7 +344,6 @@
   </div>
 
   <script>
-    // 🔗 1. Your live n8n webhook URL (Production)
     const webhookUrl = "https://n8n.srv1133312.hstgr.cloud/webhook/innovation-helper";
 
     const messagesEl = document.getElementById("messages");
@@ -357,8 +351,6 @@
     const inputEl = document.getElementById("message-input");
     const sendButtonEl = document.getElementById("send-button");
 
-    // This keeps the past turns that are sent as `memory` to the webhook
-    // Shape: { role: "user" | "assistant", content: "..." }
     const memory = [];
 
     function appendMessage(role, text) {
@@ -387,11 +379,9 @@
     }
 
     async function sendToBackend(message) {
-      // Add user message locally + to memory
       appendMessage("user", message);
       memory.push({ role: "user", content: message });
 
-      // Meta “thinking” line
       const thinkingEl = appendMeta("Assistant is thinking with the course data...");
 
       sendButtonEl.disabled = true;
@@ -437,11 +427,21 @@
       sendToBackend(raw);
     });
 
-    // Optional: initial greeting from assistant
     appendMessage(
       "assistant",
       "Hi, I’m the Innovation Management course assistant. You can ask about weekly topics, assessments, workload, learning outcomes or the textbook — all based on the official course blueprint."
     );
+
+    // Hook up the quick prompt chips
+    document.querySelectorAll(".prompt-chip").forEach((chip) => {
+      chip.addEventListener("click", () => {
+        const text = chip.textContent;
+        inputEl.value = text;      // put it in the box
+        // If you want auto-send when clicked, uncomment the next two lines:
+        // inputEl.value = "";
+        // sendToBackend(text);
+      });
+    });
   </script>
 </body>
 </html>
