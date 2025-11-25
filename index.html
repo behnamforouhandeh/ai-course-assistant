@@ -19,10 +19,15 @@
       --shadow-soft: 0 18px 40px rgba(0, 0, 0, 0.6);
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
     body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
       background: radial-gradient(circle at top, #1f2937 0, #020617 60%);
       color: var(--text-main);
       min-height: 100vh;
@@ -32,7 +37,10 @@
       padding: 24px;
     }
 
-    .app-shell { max-width: 950px; width: 100%; }
+    .app-shell {
+      max-width: 950px;
+      width: 100%;
+    }
 
     .chat-panel {
       background: radial-gradient(circle at top, #111827, #020617 70%);
@@ -59,9 +67,14 @@
       font-size: 18px;
     }
 
-    .chat-header-title-row span:first-child { font-size: 18px; }
+    .chat-header-title-row span:first-child {
+      font-size: 18px;
+    }
 
-    .chat-header p { font-size: 13px; color: var(--text-muted); }
+    .chat-header p {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
 
     .chat-body {
       background: #020617;
@@ -86,20 +99,34 @@
       scrollbar-color: #4b5563 transparent;
     }
 
-    .messages::-webkit-scrollbar { width: 6px; }
-    .messages::-webkit-scrollbar-thumb { background: #4b5563; border-radius: 999px; }
+    .messages::-webkit-scrollbar {
+      width: 6px;
+    }
+    .messages::-webkit-scrollbar-thumb {
+      background: #4b5563;
+      border-radius: 999px;
+    }
 
-    .message-row { display: flex; gap: 8px; }
-    .message-row.user { justify-content: flex-end; }
-    .message-row.assistant { justify-content: flex-start; }
+    .message-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .message-row.user {
+      justify-content: flex-end;
+    }
+
+    .message-row.assistant {
+      justify-content: flex-start;
+    }
 
     .message-bubble {
       max-width: 80%;
       padding: 9px 13px;
       border-radius: 18px;
       font-size: 14px;
-      line-height: 1.35;
-      white-space: pre-wrap;
+      line-height: 1.5;
+      white-space: normal;
     }
 
     .message-row.user .message-bubble {
@@ -115,6 +142,24 @@
       border-bottom-left-radius: 4px;
     }
 
+    /* Assistant content formatting */
+    .message-row.assistant .message-bubble p {
+      margin: 0 0 0.4em;
+    }
+
+    .message-row.assistant .message-bubble ul {
+      padding-left: 1.2em;
+      margin: 0 0 0.4em;
+    }
+
+    .message-row.assistant .message-bubble li {
+      margin: 0 0 0.25em;
+    }
+
+    .message-row.assistant .message-bubble strong {
+      font-weight: 600;
+    }
+
     /* Typing indicator */
     .typing-indicator-bubble {
       background: #020617;
@@ -126,25 +171,47 @@
       gap: 4px;
     }
     .typing-dot {
-      width: 6px; height: 6px;
+      width: 6px;
+      height: 6px;
       border-radius: 999px;
       background: #e5e7eb;
       opacity: 0.3;
       animation: typingBounce 1s infinite ease-in-out;
     }
-    .typing-dot:nth-child(2) { animation-delay: 0.15s; }
-    .typing-dot:nth-child(3) { animation-delay: 0.3s; }
-
-    @keyframes typingBounce {
-      0%, 80%, 100% { transform: translateY(0); opacity: 0.3; }
-      40% { transform: translateY(-3px); opacity: 1; }
+    .typing-dot:nth-child(2) {
+      animation-delay: 0.15s;
+    }
+    .typing-dot:nth-child(3) {
+      animation-delay: 0.3s;
     }
 
-    .chat-footer { margin-top: 12px; display: flex; flex-direction: column; gap: 8px; }
-    .helper-text { font-size: 12px; color: var(--text-muted); margin-bottom: 4px; }
+    @keyframes typingBounce {
+      0%, 80%, 100% {
+        transform: translateY(0);
+        opacity: 0.3;
+      }
+      40% {
+        transform: translateY(-3px);
+        opacity: 1;
+      }
+    }
+
+    .chat-footer {
+      margin-top: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .helper-text {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
 
     .quick-prompts {
-      display: flex; flex-wrap: wrap;
+      display: flex;
+      flex-wrap: wrap;
       gap: 8px;
       margin-bottom: 10px;
     }
@@ -160,24 +227,17 @@
       transition: background 0.15s ease, transform 0.1s ease;
       white-space: nowrap;
     }
+
     .prompt-chip:hover {
       background: rgba(148, 163, 184, 0.25);
       transform: translateY(-1px);
     }
 
-    /* New: disabled chips */
-    .prompt-chip.disabled {
-      background: rgba(148, 163, 184, 0.07);
-      color: #6b7280;
-      border: 1px solid rgba(148, 163, 184, 0.15);
-      cursor: not-allowed;
-      opacity: 0.6;
-      transform: none;
-      box-shadow: none;
+    form {
+      display: flex;
+      align-items: stretch;
+      gap: 8px;
     }
-    .prompt-chip.disabled:hover { transform: none; }
-
-    form { display: flex; align-items: stretch; gap: 8px; }
 
     textarea {
       flex: 1;
@@ -188,7 +248,19 @@
       color: var(--text-main);
       padding: 10px 14px;
       font-size: 14px;
+      line-height: 1.3;
       min-height: 48px;
+      max-height: 96px;
+      outline: none;
+    }
+
+    textarea::placeholder {
+      color: #6b7280;
+    }
+
+    textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px rgba(168, 85, 247, 0.5);
     }
 
     button {
@@ -205,16 +277,53 @@
       justify-content: center;
       min-width: 82px;
       box-shadow: 0 14px 32px rgba(168, 85, 247, 0.4);
+      white-space: nowrap;
     }
 
-    .send-icon { margin-left: 6px; font-size: 14px; }
+    button:disabled {
+      opacity: 0.55;
+      cursor: default;
+      box-shadow: none;
+      transform: none;
+      filter: grayscale(0.1);
+    }
 
+    button:not(:disabled):hover {
+      transform: translateY(-1px);
+      box-shadow: 0 18px 40px rgba(168, 85, 247, 0.55);
+      filter: brightness(1.03);
+    }
+
+    button:not(:disabled):active {
+      transform: translateY(0);
+      box-shadow: 0 10px 24px rgba(168, 85, 247, 0.45);
+    }
+
+    .send-icon {
+      margin-left: 6px;
+      font-size: 14px;
+    }
+
+    @media (max-width: 640px) {
+      .chat-panel {
+        border-radius: 1.5rem;
+        padding: 18px 16px 14px;
+      }
+
+      .message-bubble {
+        max-width: 100%;
+      }
+
+      button {
+        padding: 0 14px;
+        min-width: 70px;
+      }
+    }
   </style>
 </head>
 <body>
   <div class="app-shell">
     <div class="chat-panel">
-
       <header class="chat-header">
         <div class="chat-header-title-row">
           <span>💡</span>
@@ -246,13 +355,16 @@
         </div>
 
         <form id="chat-form">
-          <textarea id="message-input" placeholder="Ask a question about the course..."></textarea>
+          <textarea
+            id="message-input"
+            placeholder="Ask a question about the course..."
+          ></textarea>
           <button type="submit" id="send-button">
-            Send <span class="send-icon">➤</span>
+            Send
+            <span class="send-icon">➤</span>
           </button>
         </form>
       </footer>
-
     </div>
   </div>
 
@@ -267,13 +379,63 @@
     const memory = [];
     let typingRow = null;
 
+    function renderAssistantHtml(text) {
+      // Basic escaping
+      let safe = text
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+
+      const lines = safe.split(/\r?\n/);
+      let html = "";
+      let inList = false;
+
+      for (const raw of lines) {
+        const line = raw.trim();
+
+        if (!line) {
+          if (inList) {
+            html += "</ul>";
+            inList = false;
+          }
+          continue;
+        }
+
+        const bulletMatch = line.match(/^([*+\-])\s+(.*)$/);
+        if (bulletMatch) {
+          if (!inList) {
+            html += "<ul>";
+            inList = true;
+          }
+          let content = bulletMatch[2];
+          content = content.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+          html += `<li>${content}</li>`;
+        } else {
+          if (inList) {
+            html += "</ul>";
+            inList = false;
+          }
+          let content = line.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+          html += `<p>${content}</p>`;
+        }
+      }
+
+      if (inList) html += "</ul>";
+      return html;
+    }
+
     function appendMessage(role, text) {
       const row = document.createElement("div");
       row.className = `message-row ${role}`;
 
       const bubble = document.createElement("div");
       bubble.className = "message-bubble";
-      bubble.textContent = text;
+
+      if (role === "assistant") {
+        bubble.innerHTML = renderAssistantHtml(text);
+      } else {
+        bubble.textContent = text;
+      }
 
       row.appendChild(bubble);
       messagesEl.appendChild(row);
@@ -322,11 +484,17 @@
           body: JSON.stringify({ message, memory }),
         });
 
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+
         const text = await response.text();
         hideTyping();
+
         appendMessage("assistant", text.trim());
         memory.push({ role: "assistant", content: text.trim() });
-      } catch {
+      } catch (error) {
+        console.error(error);
         hideTyping();
         appendMessage(
           "assistant",
@@ -345,17 +513,19 @@
       sendToBackend(raw);
     });
 
+    // Initial greeting
     appendMessage(
       "assistant",
       "Hi, I’m the Innovation Management course assistant. You can ask about weekly topics, assessments, workload, learning outcomes or the textbook."
     );
 
-    // Chips disable after clicking
+    // Quick prompt chips: fill box + hide chip once used
     document.querySelectorAll(".prompt-chip").forEach((chip) => {
       chip.addEventListener("click", () => {
-        if (chip.classList.contains("disabled")) return;
+        if (chip.dataset.used === "1") return;
         inputEl.value = chip.textContent;
-        chip.classList.add("disabled");
+        chip.dataset.used = "1";
+        chip.style.display = "none";
       });
     });
   </script>
